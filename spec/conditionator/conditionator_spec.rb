@@ -2,9 +2,9 @@ require "spec_helper"
 
 
 describe Conditionator do
-include Conditionator
 
 		class TestObj
+			include Conditionator
 
 			precondition_for :method, :precondition
 			precondition_for :method_success, :precondition_true
@@ -112,9 +112,13 @@ include Conditionator
 			@test_obj.preconditions[:method_multiple].should eq([:precondition, :precondition_true])
 		end
 
-		it "should excecute the precondition methods before the actual method" do
+		it "should execute the precondition methods before the actual method" do
 			@test_obj.method
 			@test_obj.chain_of_excecution.should =~ [:precondition, :method]
+		end
+
+		it "should pass the parameters of the method into the precondition method" do
+			pending("Implementation")
 		end
 
 		it "should excecute the method only if the precondition is true" do
@@ -123,11 +127,7 @@ include Conditionator
 		end
 
 		it "should raise an exception (Conditionator::PrecondintionsNotMet) if one or more of the precondition fails" do
-			expect { @test_obj.method_fail }.to raise_error(Conditionator::PreconditionsNotMet)
-		end
-
-		it "should take a special symbol (:_all_) to specify that all methods will have the precondition" do
-			pending "Implementation"
+			expect { @test_obj.method_fail }.to raise_error(ConditionatorHook::PreconditionsNotMet)
 		end
 
 		it "should allow an array of methods to be preconditioned by an array of preconditions" do
@@ -150,13 +150,14 @@ include Conditionator
 			@test_obj.chain_of_excecution =~ [:method_with_postcondition, :postcondition1]
 		end
 
-		it "should take a special symbol (:_all_) to specify that all methods will have the postconditions" do
-			pending "Implementation"
-		end
-
 		it "should allow an array of methods to be postconditioned by an array of postconditions" do
 			(@test_obj.postconditions[:m1] + @test_obj.postconditions[:m2]).uniq.should =~ [:mpoc1, :mpoc2] 
 		end
+
+		it "should pass the parameters of the method into the postcondition method" do
+			pending("Implementation")
+		end
+
 	end	
 	
 end

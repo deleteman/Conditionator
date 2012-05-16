@@ -21,9 +21,23 @@ The gem is hosted on RubyGems.org, so to install it you just run the command:
 After installing the gem, setup your conditions like this:
 
 ```ruby
-precondition_for :my_method, [:precondition_method1, :precondition_method2]
-postcondition_for :my_other_method, :postcondition_method
+class MyClass 
+	include Conditionator
+
+	precondition_for :my_method, [:precondition_method1, :precondition_method2]
+	postcondition_for :my_other_method, :postcondition_method
+
+end
 ```
+
+####Attributes
+
+Both methods receive the same attributes, that is:
+
+- 1st: The method or array of methods to which we'll add the conditions to.
+- 2nd: The method or array of methods that will act as conditions.
+
+
 ###So, what happens when a pre-condition is not met?
 
 That's a good question! When a pre-condition is not met, an exception is thrown for you to catch. The name of the exception is ```Conditionator::PreconditionsNotMet```

@@ -1,17 +1,12 @@
 require 'conditionator/hooks'
 
-#Extends all objects to check for conditions
-class Object
-	include Conditionator
+#Main module, including this module in your class will attach it the methods 
+module Conditionator
 
-	class << self
-		alias_method :old_new, :new
-
-		def new *args
-			o = old_new(*args)
-			o.load_conditions
-			o
+	def self.included base
+		base.send :include, ConditionatorHook
+		def base.new(*)
+			super.tap(&:load_conditions)
 		end
 	end
-
 end

@@ -1,6 +1,6 @@
-module Conditionator
+module ConditionatorHook
 
-	class PreconditionsNotMet < Exception
+	class PreconditionsNotMet < StandardError
 	end
 
 private
