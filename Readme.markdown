@@ -29,6 +29,8 @@ class MyClass
 
 end
 ```
+If you want a more in-depth example, checkout the "sample" folder.
+
 
 ####Attributes
 
@@ -37,6 +39,20 @@ Both methods receive the same attributes, that is:
 - 1st: The method or array of methods to which we'll add the conditions to.
 - 2nd: The method or array of methods that will act as conditions.
 
+###Defining your pre and post condition methods 
+
+These are just regular methods inside your class, the only consideration that you'll need to have are their attributes:
+
+- The precondition methods will take the same arguments as the original method.
+- The postcondition methods will take the arguments of the original method and the it's result.
+
+If you don't care about the parameters sent, you can ignore them when declaring your method, like this:
+
+```ruby
+def my_postcondition_method *p
+  puts "I'm ignoring the parameters that I receive, so I can be used with different methods without causing any trouble...""
+end
+```
 
 ###So, what happens when a pre-condition is not met?
 

@@ -18,10 +18,33 @@ describe Conditionator do
 			postcondition_for [:m1,:m2], [:mpoc1, :mpoc2]
 
 			postcondition_for :method_with_postcondition, [:postcondition1, :postcondition2]
+
+			precondition_for :method_with_params, :can_values_be_divided?
+			postcondition_for :method_with_params, :double_check_division
+
 			attr_accessor :chain_of_excecution
+			attr_accessor :division_was_correct
 
 			def m1; end
 			def m2; end
+
+			def can_values_be_divided?(p1, p2) 
+				if p1.is_a?(Integer) && p2.is_a?(Integer)
+					if p2 > 0
+						return true
+					end
+				end
+				return false
+			end
+
+			def double_check_division p1, p2, result
+				@division_was_correct = (p1/p2) == result
+			end
+
+			#it'll return the  of both parameters
+			def method_with_params(p1, p2) 
+				return (p1/p2)
+			end
 
 			#multi precondition
 			def mpc1
@@ -87,12 +110,12 @@ describe Conditionator do
 				false
 			end
 
-			def postcondition1
+			def postcondition1 p
 				@chain_of_excecution = [] if @chain_of_excecution.nil?
 				@chain_of_excecution << :postcondition1
 			end
 
-			def postcondition2
+			def postcondition2 p
 				@chain_of_excecution = [] if @chain_of_excecution.nil?
 				@chain_of_excecution << :postcondition2
 			end
@@ -118,7 +141,8 @@ describe Conditionator do
 		end
 
 		it "should pass the parameters of the method into the precondition method" do
-			pending("Implementation")
+			@test_obj.method_with_params(2,2).should eq(1)
+			#pending("Implementation")
 		end
 
 		it "should excecute the method only if the precondition is true" do
@@ -127,7 +151,7 @@ describe Conditionator do
 		end
 
 		it "should raise an exception (Conditionator::PrecondintionsNotMet) if one or more of the precondition fails" do
-			expect { @test_obj.method_fail }.to raise_error(ConditionatorHook::PreconditionsNotMet)
+			expect { @test_obj.method_fail }.to raise_error(ConditionatorHooks::PreconditionsNotMet)
 		end
 
 		it "should allow an array of methods to be preconditioned by an array of preconditions" do
@@ -154,8 +178,9 @@ describe Conditionator do
 			(@test_obj.postconditions[:m1] + @test_obj.postconditions[:m2]).uniq.should =~ [:mpoc1, :mpoc2] 
 		end
 
-		it "should pass the parameters of the method into the postcondition method" do
-			pending("Implementation")
+		it "should pass the parameters of the method, and its output into the postcondition method" do
+			@test_obj.method_with_params(2,2)
+			@test_obj.division_was_correct.should be(true)
 		end
 
 	end	

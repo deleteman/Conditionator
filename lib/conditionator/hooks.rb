@@ -1,13 +1,13 @@
-module ConditionatorHook
+module ConditionatorHooks
 
 	class PreconditionsNotMet < StandardError
 	end
 
-private
+	private
 	def conditions type
 		conds = {}
 		data = self.class.data
-	
+
 		data[self.class.name].each do |method, filter|
 			if filter.key? type
 				conds[method] = [] if conds[method].nil?
@@ -21,7 +21,7 @@ private
 		base.send :extend, ClassLevelConditionator
 	end
 
-public	
+	public	
 	#Returns a list of all preconditions, grouped by the method they're a precondition to.
 	def preconditions
 		conditions :pre
@@ -36,31 +36,31 @@ public
 
 		_data = self.class.data
 		_data[self.class.name] = {} if _data[self.class.name].nil?
-	
+
 		_data[self.class.name].each { |method, type|
 			type.each { |_when, data|
-				
+
 				arr_methods = data[:methods]
-	
+
 				if !self.respond_to? "#{method}_with_#{_when}_cond".to_sym
 					self.class.send :define_method, "#{method}_with_#{_when}_cond".to_sym do |*p|
 						if(_when == :pre)
 							returns = arr_methods.collect do |m| 
-								self.send(m) ? true : false
+								self.send(m, *p) ? true : false
 							end
 							returns.uniq!
-							if returns.length == 1 and returns.include? true	
-								data[:block].call(self) if !data[:block].nil?
-							else
+
+							if returns.include? false
 								raise PreconditionsNotMet
 							end
 						end 
-						self.send "#{method}_without_#{_when}_cond".to_sym, *p
+						ret_value = self.send "#{method}_without_#{_when}_cond".to_sym, *p
 						if(_when == :post)
-							arr_methods.each do |m| self.send m end
-							data[:block].call(self) if !data[:block].nil?
+							arr_methods.each do |m| 
+								self.send m, *p, ret_value 
+							end
 						end 
-
+						return ret_value
 					end
 					self.class.send :alias_method, "#{method}_without_#{_when}_cond".to_sym, method
 					self.class.send :alias_method, method, "#{method}_with_#{_when}_cond".to_sym
@@ -121,9 +121,5 @@ public
 				add_condition_for :post, method_name, conditions
 			end
 		end
-
-
 	end
-
-
 end

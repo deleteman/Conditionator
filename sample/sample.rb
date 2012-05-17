@@ -2,28 +2,42 @@
 require 'conditionator'
 
 class MyClass 
+	include Conditionator
 
-	precondition_for :my_method, :user_logged_in?
-	postcondition_for :my_method, :say_thanks
+	precondition_for :custom_division, :is_division_possible?
+	postcondition_for :custom_division, :say_thanks
 
-	def user_logged_in?
-		#false
-		true
+	#Custom division method, just cause I can.
+	def custom_division a, b
+	 return a / b 
 	end
 
-	def say_thanks
-		puts "Thanks for trying me!"
+	def is_division_possible? a, b
+		if a.is_a?(Integer) && b.is_a?(Integer)
+			if b > 0
+				return true
+			end
+		end
+		return false
 	end
 
-	def my_method
-		puts "Hey there, this method excecuted because the preconditions were met..."
+	# If we don't need the original parameters, we can just ignore them, but we DO want the return value of the method,
+	# so we declare that one
+	def say_thanks *, result
+		puts "Thanks for trying me! BTW, the result of your division was: #{result}"
 	end
 
 end
 
 test = MyClass.new
 begin
-	test.my_method
-rescue PreconditionsNotMet
-	puts "The preconditions were not met, so nothing is being excecuted..."
+	result = test.custom_division(20,3)
+rescue 
+	puts "This isn't working correctly..."
+end
+
+begin
+	result = test.custom_division(2,0)
+rescue 
+	puts "There was a problem executing the division... check your numbers"
 end
