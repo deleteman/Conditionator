@@ -50,7 +50,7 @@ If you don't care about the parameters sent, you can ignore them when declaring 
 
 ```ruby
 def my_postcondition_method *p
-  puts "I'm ignoring the parameters that I receive, so I can be used with different methods without causing any trouble...""
+  puts "I'm ignoring the parameters that I receive, so I can be used with different methods without causing any trouble..."
 end
 ```
 
