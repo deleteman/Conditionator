@@ -34,10 +34,16 @@ If you want a more in-depth example, checkout the "sample" folder.
 
 ####Attributes
 
-Both methods receive the same attributes, that is:
+####precondition_for:
+- Method to be preconditioned: This can be a single method or an array of methods.
+- Precondition method: This can be a single method or an array of methods.
+- Options (optional): Hash with options that affect the behavior of the preconditions:
+    - Failsafe: Method to execute instead of the original one if one of the preconditions fails. **Warning** The return value of this method will be returned instead of the original method.
+    - Mute: If set to true, and one of the preconditions fails, the exception will not be thrown.
 
-- 1st: The method or array of methods to which we'll add the conditions to.
-- 2nd: The method or array of methods that will act as conditions.
+####postcondition_for:
+- Method to be preconditioned: This can be a single method or an array of methods.
+- Postcondition method: This can be a single method or an array of methods.
 
 ###Defining your pre and post condition methods 
 

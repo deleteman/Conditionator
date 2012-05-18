@@ -22,8 +22,26 @@ describe Conditionator do
 			precondition_for :method_with_params, :can_values_be_divided?
 			postcondition_for :method_with_params, :double_check_division
 
+			precondition_for :method_fail2, :precondition_false, {:failsafe => :failsafe_method}
+			precondition_for :method_fail3, :precondition_false, {:mute => true}
+
 			attr_accessor :chain_of_excecution
 			attr_accessor :division_was_correct
+
+			def failsafe_method(*)
+				@chain_of_excecution = [] if @chain_of_excecution.nil?
+				@chain_of_excecution << :failsafe_method
+			end
+
+			def method_fail2
+				@chain_of_excecution = [] if @chain_of_excecution.nil?
+				@chain_of_excecution << :method_fail2
+			end
+
+			def method_fail3
+				@chain_of_excecution = [] if @chain_of_excecution.nil?
+				@chain_of_excecution << :method_fail3
+			end
 
 			def m1; end
 			def m2; end
@@ -156,6 +174,20 @@ describe Conditionator do
 
 		it "should allow an array of methods to be preconditioned by an array of preconditions" do
 			(@test_obj.preconditions[:m1] + @test_obj.preconditions[:m2]).uniq.should =~ [:mpc1, :mpc2] 
+		end
+
+		it "should accept an optional failsafe method" do
+			@test_obj.failsafe_for(:method_fail2).should eq(:failsafe_method)
+		end
+
+		it "should excecute the failsafe method if one of the preconditions fails" do
+			@test_obj.method_fail2
+			@test_obj.chain_of_excecution.should =~ [:precondition_false, :failsafe_method]
+		end
+
+		it "should not throw an exeption if the developer want sends the :mute => true option" do
+			@test_obj.method_fail3
+			@test_obj.chain_of_excecution.should =~ [:precondition_false]
 		end
 	end
 

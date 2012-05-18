@@ -1,5 +1,5 @@
 require 'conditionator/hooks'
-
+	
 #Main module, including this module in your class will attach it the methods 
 module Conditionator
 	VERSION = 0.2
