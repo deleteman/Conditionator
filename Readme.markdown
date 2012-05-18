@@ -41,7 +41,7 @@ That right now, the gem works correctly with instance level methods, class level
 ####precondition_for:
 - Method to be preconditioned: This can be a single method or an array of methods.
 - Precondition method: This can be a single method or an array of methods.
-- Options (optional): Hash with options that affect the behavior of the preconditions:
+- Options (**optional**): Hash with options that affect the behavior of the preconditions:
     - Failsafe: Method to execute instead of the original one if one of the preconditions fails. **Warning** The return value of this method will be returned instead of the original method. Please note that the failsafe method should have the same signature as the original method, since the same parameters will be passed on to it.
     - Mute: If set to true, and one of the preconditions fails, the exception will not be thrown.
 
@@ -98,7 +98,7 @@ That's a good question!
 When a pre-condition is not met, one of several things might happen, depending on how you configured the preconditions:
 
 - The default behavior is that an exception will be thrown for you to catch. The name of the exception is ```Conditionator::PreconditionsNotMet```
-- If you specified the ```ruby :mute ``` option, as mentioned above, then nothing will happen, and your method will not execute. 
+- If you specified the ```:mute ``` option, as mentioned above, then nothing will happen, and your method will not execute. 
 - If you specified a failsafe method, then that method will be executed instead.
 
 ##And finally...
