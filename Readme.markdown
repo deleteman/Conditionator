@@ -33,7 +33,7 @@ If you want a more in-depth example, checkout the "sample" folder.
 
 **Please note**
 
-That right now, the gem works correctly with instance level methods, instance level methods have not been tested yet.
+That right now, the gem works correctly with instance level methods, class level methods have not been tested yet.
 
 
 ####Attributes
