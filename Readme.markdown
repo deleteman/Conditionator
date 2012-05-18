@@ -31,6 +31,10 @@ end
 ```
 If you want a more in-depth example, checkout the "sample" folder.
 
+**Please note**
+
+That right now, the gem works correctly with instance level methods, instance level methods have not been tested yet.
+
 
 ####Attributes
 
@@ -38,8 +42,36 @@ If you want a more in-depth example, checkout the "sample" folder.
 - Method to be preconditioned: This can be a single method or an array of methods.
 - Precondition method: This can be a single method or an array of methods.
 - Options (optional): Hash with options that affect the behavior of the preconditions:
-    - Failsafe: Method to execute instead of the original one if one of the preconditions fails. **Warning** The return value of this method will be returned instead of the original method.
+    - Failsafe: Method to execute instead of the original one if one of the preconditions fails. **Warning** The return value of this method will be returned instead of the original method. Please note that the failsafe method should have the same signature as the original method, since the same parameters will be passed on to it.
     - Mute: If set to true, and one of the preconditions fails, the exception will not be thrown.
+
+
+**Using the failsafe method**
+
+For a full example, please refer to sample/sample-failsafe.rb
+
+```ruby
+class WelcomeMessage
+  include Conditionator
+
+  precondition_for :say_hi, :user_is_old?, {:failsafe => :say_hi_first_time}
+
+  def say_hi user
+    puts "Hello #{user.name} welcome back!"
+  end
+
+  #returns false if this is the first time the user has logged in to our system
+  def user_is_old? user
+    return user.logins_number > 1
+  end
+
+  def say_hi_first_time user
+    puts "Hey #{user.name}! Welcome to the system, we hope you enjoy your time with us!"
+  end
+
+end
+```
+
 
 ####postcondition_for:
 - Method to be preconditioned: This can be a single method or an array of methods.
@@ -62,7 +94,12 @@ end
 
 ###So, what happens when a pre-condition is not met?
 
-That's a good question! When a pre-condition is not met, an exception is thrown for you to catch. The name of the exception is ```Conditionator::PreconditionsNotMet```
+That's a good question! 
+When a pre-condition is not met, one of several things might happen, depending on how you configured the preconditions:
+
+- The default behavior is that an exception will be thrown for you to catch. The name of the exception is ```Conditionator::PreconditionsNotMet```
+- If you specified the ```ruby :mute ``` option, as mentioned above, then nothing will happen, and your method will not execute. 
+- If you specified a failsafe method, then that method will be executed instead.
 
 ##And finally...
 
