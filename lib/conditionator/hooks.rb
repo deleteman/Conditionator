@@ -42,43 +42,44 @@ module ConditionatorHooks
     _data[self.class.name] = {} if _data[self.class.name].nil?
 
     _data[self.class.name].each { |method, type|
-      type.each { |_when, data|
 
-        arr_methods = data[:methods]
+      pre_arr_methods = type[:pre][:methods] if !type[:pre].nil?
+      post_arr_methods = type[:post][:methods] if !type[:post].nil?
 
-        if !self.respond_to? "#{method}_with_#{_when}_cond".to_sym
-          self.class.send :define_method, "#{method}_with_#{_when}_cond".to_sym do |*p|
-            execute_method = true
-            if(_when == :pre)
-              returns = arr_methods.collect do |m| 
-                self.send(m, *p) ? true : false
-              end
-              returns.uniq!
-
-              #if one of the preconditions returned false, we act accordingly
-              if returns.include? false
-                execute_method = false
-                if !data[:failsafe].nil? #if we had setup a failsafe method, we use that
-                  ret_value = self.send(data[:failsafe], *p) #if we execute the failsafe, that method will give us the returning value
-                else #otherwise, we raise the exception if the dev didn't mute it
-                  raise PreconditionsNotMet if !data[:mute]
-                end
-              end
-            end 
-            if execute_method
-              ret_value = self.send "#{method}_without_#{_when}_cond".to_sym, *p
+      if !self.respond_to? "#{method}_with_cond".to_sym
+        self.class.send :define_method, "#{method}_with_cond".to_sym do |*p|
+          execute_method = true
+          if(type.key? :pre)
+            returns = pre_arr_methods.collect do |m| 
+              self.send(m, *p) ? true : false
             end
-            if(_when == :post)
-              arr_methods.each do |m| 
+            returns.uniq!
+
+            #if one of the preconditions returned false, we act accordingly
+            if returns.include? false
+              execute_method = false
+              if !type[:pre][:failsafe].nil? #if we had setup a failsafe method, we use that
+                ret_value = self.send(type[:pre][:failsafe], *p) #if we execute the failsafe, that method will give us the returning value
+              else #otherwise, we raise the exception if the dev didn't mute it
+                raise PreconditionsNotMet if !type[:pre][:mute]
+              end
+            end
+          end 
+          if execute_method
+            ret_value = self.send "#{method}_without_cond".to_sym, *p
+          end
+          if(type.key? :post)
+            if execute_method 
+              post_arr_methods.each do |m| 
                 self.send m, *p, ret_value 
               end
-            end 
-            return ret_value
-          end
-          self.class.send :alias_method, "#{method}_without_#{_when}_cond".to_sym, method
-          self.class.send :alias_method, method, "#{method}_with_#{_when}_cond".to_sym
+            end
+          end 
+          return ret_value
         end
-      }
+        self.class.send :alias_method, "#{method}_without_cond".to_sym, method
+        self.class.send :alias_method, method, "#{method}_with_cond".to_sym
+      end
     }
   end
 
@@ -128,13 +129,13 @@ module ConditionatorHooks
       end
     end
 
-    def postcondition_for method_name, conditions
+    def postcondition_for method_name, conditions, options = {}
       if method_name.is_a? Array
         method_name.each do |m|
-          add_condition_for :post, m, conditions
+          add_condition_for :post, m, conditions, options
         end
       else
-        add_condition_for :post, method_name, conditions
+        add_condition_for :post, method_name, conditions, options
       end
     end
   end

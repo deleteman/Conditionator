@@ -91,6 +91,7 @@ def my_postcondition_method *p
   puts "I'm ignoring the parameters that I receive, so I can be used with different methods without causing any trouble..."
 end
 ```
+**Remember that** your postconditions are tied to your original method. This means that if the preconditions fail, and your method is not executed, then the postcondition won't be executed either.
 
 ###So, what happens when a pre-condition is not met?
 

@@ -14,8 +14,15 @@ describe Conditionator do
 			#multi-precondition
 			precondition_for [:m1,:m2], [:mpc1, :mpc2]
 
+
+			precondition_for :m3, :precondition_false
+			precondition_for :m4, :precondition_false, {:failsafe => :mpoc1}
+			postcondition_for :m3, :mpoc2
+
+			
 			#multi-postconditions
 			postcondition_for [:m1,:m2], [:mpoc1, :mpoc2]
+
 
 			postcondition_for :method_with_postcondition, [:postcondition1, :postcondition2]
 
@@ -45,6 +52,18 @@ describe Conditionator do
 
 			def m1; end
 			def m2; end
+			def m3 
+				@chain_of_excecution = [] if @chain_of_excecution.nil?
+				@chain_of_excecution << :m3
+			end
+			def m4
+				@chain_of_excecution = [] if @chain_of_excecution.nil?
+				@chain_of_excecution << :m4
+			end
+			def m5
+				@chain_of_excecution = [] if @chain_of_excecution.nil?
+				@chain_of_excecution << :m5
+			end
 
 			def can_values_be_divided?(p1, p2) 
 				if p1.is_a?(Integer) && p2.is_a?(Integer)
@@ -189,7 +208,11 @@ describe Conditionator do
 			@test_obj.method_fail3
 			@test_obj.chain_of_excecution.should =~ [:precondition_false]
 		end
-	end
+
+		it "should not execute a postcondition if one of the preconditions fails" do
+			expect { @test_obj.m3}.to raise_error(ConditionatorHooks::PreconditionsNotMet)
+		end
+end
 
 	describe "#postcondition_for" do
 
@@ -215,6 +238,12 @@ describe Conditionator do
 			@test_obj.division_was_correct.should be(true)
 		end
 
+		it "should not execute a postcontidion if one of the preconditions fails and there is a failsafe in place" do
+			@test_obj.m4
+			@test_obj.chain_of_excecution =~ [:precondition_false]
+		end
+
+	
 	end	
 	
 end
