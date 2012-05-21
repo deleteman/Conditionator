@@ -54,6 +54,8 @@ class User
    date = Date.parse(@birthdate)
    new_date = Date.new(now.year, date.month, date.day)
    @age = now.year - date.year - (new_date > now ? 1 : 0)
+   #we save the user again, but ignoring the conditions (pre or post)
+   save_without_cond
   end
 end
 
