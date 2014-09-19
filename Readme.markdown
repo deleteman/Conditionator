@@ -41,13 +41,13 @@ As of writing this, the gem works correctly only with instance methods; class me
 - Method to be pre-conditioned: This can be a single method or an array of methods.
 - Pre-condition method: This can be a single method or an array of methods.
 - Options (**optional**): Hash with options that affect the behavior of the pre-conditions:
-    - Failsafe: Method to execute instead of the original method if one of the pre-conditions fails. **Warning** The return value of this method will be returned instead of that of the original method. Please note that the failsafe method should have the same signature as the original method, since the same parameters will be passed on to it.
-    - Mute: If set to true, and one of the pre-conditions fails, an exception will not be thrown.
+    - *failsafe*: Method to execute instead of the original method if one of the pre-conditions fails. **Warning** The return value of this method will be returned instead of that of the original method. Please note that the failsafe method should have the same signature as the original method, since the same parameters will be passed on to it.
+    - *mute*: If set to true, and if one of the pre-conditions fails, an exception will NOT be thrown.
 
 
 **Using the failsafe method**
 
-For a full example, please refer to sample/sample-failsafe.rb
+For a full, detailed example, please refer to sample/sample-failsafe.rb
 
 ```ruby
 class WelcomeMessage
@@ -74,7 +74,7 @@ end
 
 ####postcondition_for:
 - Method to be postconditioned: This can be a single method or an array of methods.
-- Postcondition method: This can be a single method or an array of methods.
+- Post-condition method: This can be a single method or an array of methods.
 
 ###Defining your *pre* and *post* condition methods 
 
@@ -87,9 +87,9 @@ def my_postcondition_method *p
   puts "I'm ignoring the parameters that I receive, so I can be used with different methods without causing any trouble..."
 end
 ```
-**Remember that** your postconditions are tied to your original method. This means that if the pre-conditions fail, and your method is not executed, then the post-condition won't be executed either.
+**Remember** that your post-conditions are tied to your original method. This means that if the pre-conditions fail, and your method is not executed, then the post-conditions won't be executed either.
 
-###So, what happens when a pre-condition is not met?
+###So...what happens when a pre-condition is not met?
 
 That's a good question! 
 When a pre-condition is not met, one of several things might happen, depending on how you configured your pre-conditions:
